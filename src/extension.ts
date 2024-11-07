@@ -9,7 +9,6 @@ import {
   workspace,
 } from 'vscode';
 import { Output } from './global';
-import { GitBlameTool } from './blame/GitBlameTool';
 
 export function activate(context: ExtensionContext) {
   context.subscriptions.push(
@@ -26,7 +25,6 @@ export function activate(context: ExtensionContext) {
       'doublefloat.inspector.runInTerminal',
       runInTerminal,
     ),
-    new GitBlameTool(),
   );
 
   if (context.extensionMode === ExtensionMode.Development) {
