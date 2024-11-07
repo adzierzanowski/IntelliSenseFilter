@@ -1,20 +1,12 @@
 {
-  "name": "intellisensefilter",
+  "name": "inspector",
   "publisher": "doublefloat",
-  "displayName": "IntelliSenseFilter",
-  "description": "Filter IntelliSense suggestions by their kind",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/adzierzanowski/intellisensefilter"
-  },
+  "displayName": "Inspector Gadget",
+  "description": "Generic VSCode tool",
   "icon": "images/icon.png",
-  "keywords": [
-    "filter",
-    "intellisense",
-    "suggestion"
-  ],
+  "keywords": [],
   "preview": true,
-  "version": "0.1.0",
+  "version": "0.0.1",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -28,18 +20,53 @@
   "contributes": {
     "commands": [
       {
-        "command": "intellisensefilter.pick",
-        "title": "IntelliSenseFilter: Pick",
-        "shortTitle": "Pick Filter"
+        "command": "doublefloat.inspector.inspectCommands",
+        "title": "Inspector Gadget: Inspect VSCode Commands",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "doublefloat.inspector.inspectSettings",
+        "title": "Inspector Gadget: Inspect Settings",
+        "icon": "$(settings)"
+      },
+      {
+        "command": "doublefloat.inspector.quickPick",
+        "title": "Inspector Gadget: QuickPick"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "doublefloat.inspector.quickPick",
+        "key": "cmd+j cmd+j"
+      },
+      {
+        "command": "doublefloat.inspector.runInTerminal",
+        "args": [
+          "!!"
+        ],
+        "key": "cmd+r"
       }
     ],
     "configuration": {
-      "title": "IntelliSenseFilter",
+      "title": "Inspector Gadget",
       "properties": {
-        "intellisensefilter.triggerOnApply": {
+        "doublefloat.inspector.blame.enabled": {
           "type": "boolean",
-          "default": true,
-          "description": "Triggers the suggest widget on filter change"
+          "description": "Enable Git Blame",
+          "default": true
+        },
+        "doublefloat.inspector.blame.placement": {
+          "enum": [
+            "Inline",
+            "StatusBar",
+            "CodeLens"
+          ],
+          "enumDescriptions": [
+            "Display as line decoration",
+            "Display in the status bar",
+            "Display above the current line"
+          ],
+          "default": "Inline"
         }
       }
     }
