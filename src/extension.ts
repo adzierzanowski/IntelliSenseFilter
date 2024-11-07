@@ -3,12 +3,14 @@ import {
   env,
   ExtensionContext,
   ExtensionMode,
+  extensions,
   QuickPickItem,
   ThemeIcon,
   window,
   workspace,
 } from 'vscode';
 import { Output } from './global';
+import { GitBlameTool } from './GitBlameTool';
 
 export function activate(context: ExtensionContext) {
   context.subscriptions.push(
@@ -25,9 +27,14 @@ export function activate(context: ExtensionContext) {
       'doublefloat.inspector.runInTerminal',
       runInTerminal,
     ),
+    commands.registerCommand('doublefloat.inspector.showOutput', () => {
+      Output.show();
+    }),
+    new GitBlameTool(),
   );
 
   if (context.extensionMode === ExtensionMode.Development) {
+    Output.show();
   }
 
   Output.info('Inspector Gadget');
@@ -51,6 +58,16 @@ export async function showQuickPick() {
       label: 'Inspect Settings',
       iconPath: new ThemeIcon('settings'),
     },
+    {
+      detail: 'doublefloat.inspector.blame.show',
+      label: 'Blame Current Line',
+      iconPath: new ThemeIcon('github-action'),
+    },
+    {
+      detail: 'doublefloat.inspector.showOutput',
+      label: 'Show Output',
+      iconPath: new ThemeIcon('output'),
+    },
   ];
 
   quickPick.onDidAccept(async (e) => {
@@ -59,6 +76,8 @@ export async function showQuickPick() {
     } catch (err) {
       Output.error(`${err}`);
       Output.show();
+    } finally {
+      quickPick.dispose();
     }
   });
 
@@ -138,12 +157,10 @@ export async function inspectSettings() {
   if (inspected) {
     Output.show();
     Object.entries(inspected).forEach(([key, value]) => {
-      Output.appendLine(
-        `${value === configKey ? '' : '        '}${key}: ${value}`,
-      );
+      Output.info(`${value === configKey ? '' : '        '}${key}: ${value}`);
     });
 
-    Output.appendLine(`======= Final Value: ${configValue}`);
+    Output.info(`======= Final Value: ${configValue}`);
   }
 }
 

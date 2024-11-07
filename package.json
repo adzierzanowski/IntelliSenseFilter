@@ -2,11 +2,11 @@
   "name": "inspector",
   "publisher": "doublefloat",
   "displayName": "Inspector Gadget",
-  "description": "Generic VSCode tool",
+  "description": "VSCode inspecting utilities",
   "icon": "images/icon.png",
   "keywords": [],
   "preview": true,
-  "version": "0.0.1",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -32,6 +32,16 @@
       {
         "command": "doublefloat.inspector.quickPick",
         "title": "Inspector Gadget: QuickPick"
+      },
+      {
+        "command": "doublefloat.inspector.blame.show",
+        "title": "Inspector Gadget: Show Git Blame for Current Line",
+        "icon": "$(zap)",
+        "shortTitle": "$(zap)"
+      },
+      {
+        "command": "doublefloat.inspector.showOutput",
+        "title": "Inspector Gadget: Show Output"
       }
     ],
     "keybindings": [
@@ -40,36 +50,17 @@
         "key": "cmd+j cmd+j"
       },
       {
+        "command": "doublefloat.inspector.blame.show",
+        "key": "cmd+j cmd+b"
+      },
+      {
         "command": "doublefloat.inspector.runInTerminal",
         "args": [
           "!!"
         ],
         "key": "cmd+r"
       }
-    ],
-    "configuration": {
-      "title": "Inspector Gadget",
-      "properties": {
-        "doublefloat.inspector.blame.enabled": {
-          "type": "boolean",
-          "description": "Enable Git Blame",
-          "default": true
-        },
-        "doublefloat.inspector.blame.placement": {
-          "enum": [
-            "Inline",
-            "StatusBar",
-            "CodeLens"
-          ],
-          "enumDescriptions": [
-            "Display as line decoration",
-            "Display in the status bar",
-            "Display above the current line"
-          ],
-          "default": "Inline"
-        }
-      }
-    }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
