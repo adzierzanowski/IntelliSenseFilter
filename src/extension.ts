@@ -3,16 +3,19 @@ import {
   env,
   ExtensionContext,
   ExtensionMode,
-  extensions,
   QuickPickItem,
   ThemeIcon,
   window,
   workspace,
-} from 'vscode';
-import { Output } from './global';
-import { GitBlameTool } from './GitBlameTool';
+} from 'vscode'
+import { Output } from './global'
+import { PvgTool } from './tools/PvgTool'
 
 export function activate(context: ExtensionContext) {
+  Output.info('Starting INSPECTOR GADGET')
+
+  const pvgTool = new PvgTool()
+
   context.subscriptions.push(
     commands.registerCommand('doublefloat.inspector.quickPick', showQuickPick),
     commands.registerCommand(
@@ -27,25 +30,36 @@ export function activate(context: ExtensionContext) {
       'doublefloat.inspector.runInTerminal',
       runInTerminal,
     ),
+    commands.registerCommand(
+      'doublefloat.inspector.format',
+      formatPrettierEslint,
+    ),
     commands.registerCommand('doublefloat.inspector.showOutput', () => {
-      Output.show();
+      Output.show()
     }),
-    new GitBlameTool(),
-  );
+    ...pvgTool.register(context),
+  )
 
   if (context.extensionMode === ExtensionMode.Development) {
-    Output.show();
+    Output.show()
   }
 
-  Output.info('Inspector Gadget');
+  Output.info('Inspector Gadget')
+}
+
+export async function formatPrettierEslint() {
+  await commands.executeCommand('prettier.forceFormatDocument')
+  await commands.executeCommand('eslint.executeAutofix', {
+    uri: window.activeTextEditor?.document.uri,
+  })
 }
 
 export async function runInTerminal(args: string[]) {
-  window.activeTerminal?.sendText(args.join(' '), true);
+  window.activeTerminal?.sendText(args.join(' '), true)
 }
 
 export async function showQuickPick() {
-  const quickPick = window.createQuickPick<QuickPickItem>();
+  const quickPick = window.createQuickPick<QuickPickItem>()
 
   quickPick.items = [
     {
@@ -59,108 +73,108 @@ export async function showQuickPick() {
       iconPath: new ThemeIcon('settings'),
     },
     {
-      detail: 'doublefloat.inspector.blame.show',
-      label: 'Blame Current Line',
-      iconPath: new ThemeIcon('github-action'),
+      detail: 'doublefloat.inspector.format',
+      label: 'Format with Prettier then ESLint',
+      iconPath: new ThemeIcon('book'),
     },
     {
       detail: 'doublefloat.inspector.showOutput',
       label: 'Show Output',
       iconPath: new ThemeIcon('output'),
     },
-  ];
+  ]
 
   quickPick.onDidAccept(async (e) => {
     try {
-      await commands.executeCommand(quickPick.selectedItems[0].detail!);
+      await commands.executeCommand(quickPick.selectedItems[0].detail!)
     } catch (err) {
-      Output.error(`${err}`);
-      Output.show();
+      Output.error(`${err}`)
+      Output.show()
     } finally {
-      quickPick.dispose();
+      quickPick.dispose()
     }
-  });
+  })
 
-  quickPick.show();
+  quickPick.show()
 }
 
 export async function inspectCommands() {
-  const allCommands = await commands.getCommands();
-  const quickPick = window.createQuickPick<QuickPickItem>();
+  const allCommands = await commands.getCommands()
+  const quickPick = window.createQuickPick<QuickPickItem>()
 
   quickPick.items = allCommands.map((cmd) => ({
     label: cmd,
     buttons: [{ iconPath: new ThemeIcon('copy'), tooltip: 'Copy Command ID' }],
-  }));
+  }))
 
   quickPick.onDidTriggerItemButton(async (e) => {
     if (e.button.tooltip === 'Copy Command ID') {
-      await env.clipboard.writeText(quickPick.selectedItems[0].label);
+      await env.clipboard.writeText(quickPick.selectedItems[0].label)
     }
-  });
+  })
 
   quickPick.onDidAccept(async (e) => {
-    const commandID = quickPick.selectedItems[0].label;
-    await commands.executeCommand(commandID);
-  });
+    const commandID = quickPick.selectedItems[0].label
+    await commands.executeCommand(commandID)
+  })
 
-  quickPick.show();
+  quickPick.show()
 }
 
 export async function inspectSettings() {
-  const config = workspace.getConfiguration();
-  let configKeys: string[] = [];
+  const config = workspace.getConfiguration()
+  let configKeys: string[] = []
 
   const getKeys = (topKey?: string) => {
-    const obj = topKey ? config.get(topKey) : config;
-    const keys = Object.keys(obj as Object);
+    const obj = topKey ? config.get(topKey) : config
+    const keys = Object.keys(obj as Object)
 
     for (const key of keys) {
-      const resultingKey = topKey ? `${topKey}.${key}` : key;
-      const value = config.get(resultingKey);
+      const resultingKey = topKey ? `${topKey}.${key}` : key
+      const value = config.get(resultingKey)
 
       if (['has', 'get', 'update', 'inspect'].includes(key)) {
-        continue;
+        continue
       }
 
       if (value?.constructor === Object) {
         if (config.has(resultingKey)) {
-          getKeys(resultingKey);
+          getKeys(resultingKey)
         } else if (topKey) {
-          configKeys.push(topKey);
-          return;
+          configKeys.push(topKey)
+          return
         }
       } else {
-        configKeys.push(resultingKey);
+        configKeys.push(resultingKey)
       }
     }
-  };
+  }
 
-  getKeys();
+  getKeys()
 
   const configKey = await window.showQuickPick(configKeys, {
     canPickMany: false,
     placeHolder: 'Select a config key',
-  });
+  })
 
   if (configKey === undefined) {
-    return;
+    return
   }
 
-  const configValue = workspace.getConfiguration().get(configKey);
+  const configValue = workspace.getConfiguration().get(configKey)
   if (configValue === undefined) {
-    window.showErrorMessage('Config value is undefined');
-    return;
+    window.showErrorMessage('Config value is undefined')
+    return
   }
 
-  const inspected = workspace.getConfiguration().inspect(configKey);
+  const inspected = workspace.getConfiguration().inspect(configKey)
   if (inspected) {
-    Output.show();
+    Output.show()
     Object.entries(inspected).forEach(([key, value]) => {
-      Output.info(`${value === configKey ? '' : '        '}${key}: ${value}`);
-    });
+      Output.info(`${value === configKey ? '' : '        '}${key}: ${value}`)
+    })
 
-    Output.info(`======= Final Value: ${configValue}`);
+    Output.info(`======= Final Value: ${configValue}`)
   }
 }
 
