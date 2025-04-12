@@ -23,7 +23,7 @@ export default [{
         curly: 'warn',
         eqeqeq: 'warn',
         'no-throw-literal': 'warn',
-        semi: 'off',
+        semi: 'warn',
         quotes: ['warn', 'single']
     },
 }];

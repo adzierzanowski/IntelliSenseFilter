@@ -6,7 +6,7 @@
   "icon": "images/icon.png",
   "keywords": [],
   "preview": true,
-  "version": "0.3.0",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -34,10 +34,10 @@
         "title": "Inspector Gadget: QuickPick"
       },
       {
-        "command": "doublefloat.inspector.format",
-        "title": "Inspector Gadget: Format with Prettier and then ESLint",
-        "icon": "$(book)",
-        "shortTitle": "$(book)"
+        "command": "doublefloat.inspector.blame.show",
+        "title": "Inspector Gadget: Show Git Blame for Current Line",
+        "icon": "$(zap)",
+        "shortTitle": "$(zap)"
       },
       {
         "command": "doublefloat.inspector.showOutput",
@@ -50,41 +50,15 @@
         "key": "cmd+j cmd+j"
       },
       {
+        "command": "doublefloat.inspector.blame.show",
+        "key": "cmd+j cmd+b"
+      },
+      {
         "command": "doublefloat.inspector.runInTerminal",
         "args": [
           "!!"
         ],
         "key": "cmd+r"
-      }
-    ],
-    "configuration": {
-      "title": "Inspector Gadget",
-      "order": 1,
-      "properties": {
-        "doublefloat.inspector.pvg.enabled": {
-          "title": "PVG support enabled",
-          "type": "boolean",
-          "description": "Enable PVG language tools",
-          "default": true
-        },
-        "doublefloat.inspector.pvg.serverPath": {
-          "title": "PVG language server path",
-          "description": "PVG language server executable path",
-          "type": "string"
-        }
-      }
-    },
-    "languages": [
-      {
-        "id": "pvg",
-        "aliases": [
-          "PVG",
-          "Procedural Vector Graphics"
-        ],
-        "extensions": [
-          ".pvg"
-        ],
-        "mimetypes": ["text/pvg"]
       }
     ]
   },
@@ -104,12 +78,8 @@
     "@typescript-eslint/parser": "^8.7.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
-    "@vscode/vsce": "^3.2.1",
     "eslint": "^9.13.0",
     "prettier": "^3.3.3",
     "typescript": "^5.6.3"
-  },
-  "dependencies": {
-    "@vscode/codicons": "^0.0.36"
   }
 }

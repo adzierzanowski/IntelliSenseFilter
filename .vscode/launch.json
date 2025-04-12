@@ -10,7 +10,6 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
-				"--disable-extension doublefloat.inspector",
 				"--extensionDevelopmentPath=${workspaceFolder}"
 			],
 			"outFiles": [
